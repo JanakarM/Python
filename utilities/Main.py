@@ -1,3 +1,4 @@
+from os import remove
 import xml.etree.ElementTree as ET
 from utils import *
 
@@ -36,36 +37,31 @@ def checkExisting(a):
     return -1
 def populate_tuples():
     global url_templates
-    global reportIds
-    for repId in reportIds:
-        if repId != None:
-            if repId in report_processed:
-                continue
-            report_processed[repId]=True
-            for e in root.findall(".*[@REPORT_ID='{0}']".format(repId)):
-                url_1=e.get('REST_API_URL_PATH_ID')
-                url_2=e.get('REST_API_LEADING_URL_PATH_ID')
-                report_rest_api_id=e.get('UNIQUE_ID')
-                report_rest_params=[]
-                for ee in root.findall(".*[@REPORT_REST_API_PATH_ID='{0}']".format(report_rest_api_id)):
-                    report_rest_params.append(
-                        (
-                            ee.get("ATTRIB_ID"),
-                            ee.get("TRANSFORMER_MODEL"),
-                            ee.get("REST_API_URL_PATH_PARAM_ID"),
-                            ee.get("UNIQUE_ID")
-                        )
-                    )
-                report_rest_params.sort(key = lambda e: e[3])
-                url_templates.append(
-                    (
-                        url_1,
-                        url_2,
-                        report_rest_params,
-                        e.get('REPORT_ID'),
-                        report_rest_api_id
-                    )
+    for e in root.iter("O365ReportRestAPIs"):
+        url_1=e.get('REST_API_URL_PATH_ID')
+        url_2=e.get('REST_API_LEADING_URL_PATH_ID')
+        report_rest_api_id=e.get('UNIQUE_ID')
+        report_rest_params=[]
+        for ee in root.findall(".*[@REPORT_REST_API_PATH_ID='{0}']".format(report_rest_api_id)):
+            report_rest_params.append(
+                (
+                    ee.get("ATTRIB_ID"),
+                    ee.get("TRANSFORMER_MODEL"),
+                    ee.get("REST_API_URL_PATH_PARAM_ID"),
+                    ee.get("UNIQUE_ID")
                 )
+            )
+        report_rest_params.sort(key = lambda e: e[3])
+        url_templates.append(
+            (
+                url_1,
+                url_2,
+                report_rest_params,
+                e.get('REPORT_ID'),
+                report_rest_api_id
+            )
+        )
+            
 content_a='' # rest templates
 content_b='' # rest template vs params
 content_c='' # report vs restapi
@@ -74,9 +70,8 @@ def removeDuplicates():
     global url_templates, unique_url_templates, content_a, content_b, content_c, rep_id_vs_templates
     id_a = 0
     id_b = 0
-    url_templates.sort(key = lambda e: e[4])
     for e in url_templates:
-        if e[3] not  in rep_id_vs_templates:
+        if e[3] not in rep_id_vs_templates:
             rep_id_vs_templates[e[3]] = []
         template_id = checkExisting(e)
         if template_id == -1:
@@ -99,7 +94,7 @@ def removeDuplicates():
             rep_id_vs_templates[e[3]].append(id_a)
         else:
             rep_id_vs_templates[e[3]].append(template_id)
-    print(id_a, id_b)
+    print('id_a : {0}\nid_b: {1}'.format(id_a, id_b))
 def constructRepVsRest():
     global reportIds, content_c, rep_id_vs_templates, report_processed
     id_c = 0
@@ -113,7 +108,7 @@ def constructRepVsRest():
                 content_c += '<c '
                 content_c += 'a="{0}" b="{1}" c="{2}" '.format(id_c, repId, t)
                 content_c += '/>\n'
-    print(id_c)
+    print('id_c : ', id_c)
 populate_tuples()
 removeDuplicates()
 report_processed={}
@@ -121,5 +116,5 @@ constructRepVsRest()
 writeToFile('a.xml', content_a)
 writeToFile('b.xml', content_b)
 writeToFile('c.xml', content_c)
-print(len(reportIds))
+print('length of reportIds : {0}'.format(len(reportIds)))
 print("url_templates - {0}".format(len(url_templates)))
