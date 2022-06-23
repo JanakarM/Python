@@ -4,3 +4,7 @@ utilities/c.xml
 utilities/sample.xml
 utilities/__pycache__/utils.cpython-310.pyc
 utilities/tablecolumns.xml
+utilities/__pycache__/ColDetTransformer.cpython-310.pyc
+utilities/trans.xml
+utilities/reportrest.xml
+utilities/__pycache__/RestAPITemplate.cpython-310.pyc
