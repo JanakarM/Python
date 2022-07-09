@@ -69,7 +69,7 @@ def populate_tuples():
                     [],
                     e.get('REPORT_ID'),
                     report_rest_api_id,
-                    "com.manageengine.o365.server.msrestapi.requestprocessor.OptionalUpdateResponseProcessor" # handle concat case separately
+                    "com.manageengine.o365.server.msrestapi.requestprocessor.OptionalUpdateResponseProcessor" if relationship_type == 1 else "com.manageengine.o365.server.msrestapi.requestprocessor.ConcatResponseProcessor" # handle concat case separately
                 )
             )
             
