@@ -8,3 +8,5 @@ utilities/__pycache__/ColDetTransformer.cpython-310.pyc
 utilities/trans.xml
 utilities/reportrest.xml
 utilities/__pycache__/RestAPITemplate.cpython-310.pyc
+utilities/change_values_new.xml
+utilities/change_values.xml
